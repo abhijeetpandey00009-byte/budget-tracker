@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FamilyFunds – Budget Tracker</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ══ LOGIN SCREEN ══ -->
+<div id="loginScreen">
+  <div class="login-blob blob1"></div>
+  <div class="login-blob blob2"></div>
+  <div class="login-blob blob3"></div>
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="logo-icon">💰</div>
+      <div class="logo-text">Family<span>Funds</span></div>
+    </div>
+    <div class="login-title">Welcome back 👋</div>
+    <div class="login-sub">Track your family's money — together.</div>
+
+    <div class="tab-toggle">
+      <button class="tab-btn active" onclick="switchTab('login')">Sign In</button>
+      <button class="tab-btn" onclick="switchTab('signup')">Create Account</button>
+    </div>
+
+    <div id="loginForm">
+      <div class="form-group">
+        <label class="form-label">📱 Phone or Email</label>
+        <input type="text" class="form-input" id="loginId" placeholder="+91 98765 43210 or email@example.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">🔒 Password</label>
+        <input type="password" class="form-input" id="loginPass" placeholder="Enter your password">
+      </div>
+      <button class="login-btn" onclick="doLogin()">Sign In →</button>
+    </div>
+
+    <div id="signupForm" style="display:none">
+      <div class="form-group">
+        <label class="form-label">👤 Full Name</label>
+        <input type="text" class="form-input" id="signupName" placeholder="Rahul Sharma">
+      </div>
+      <div class="form-group">
+        <label class="form-label">📱 Phone or Email</label>
+        <input type="text" class="form-input" id="signupId" placeholder="+91 98765 43210 or email@example.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">🔒 Password</label>
+        <input type="password" class="form-input" id="signupPass" placeholder="Create a password">
+      </div>
+      <button class="login-btn" onclick="doSignup()">Create Account →</button>
+    </div>
+
+    <div class="divider">or continue with</div>
+    <div class="quick-login">
+      <button class="social-btn" onclick="quickLogin('Google')">🌐 Google</button>
+      <button class="social-btn" onclick="quickLogin('OTP')">📲 OTP Login</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MAIN APP ══ -->
+<div id="appScreen">
+
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">💰</div>
+      <div class="logo-text">Family<span>Funds</span></div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Main</div>
+      <button class="nav-item active" onclick="showPage('dashboard')">
+        <span class="icon">🏠</span> Dashboard
+      </button>
+      <button class="nav-item" onclick="showPage('transactions')">
+        <span class="icon">💳</span> Transactions
+      </button>
+      <button class="nav-item" onclick="showPage('savings')">
+        <span class="icon">🎯</span> Savings Goals
+      </button>
+      <button class="nav-item" onclick="showPage('analytics')">
+        <span class="icon">📊</span> Analytics
+      </button>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Family</div>
+      <button class="nav-item" onclick="showPage('leaderboard')">
+        <span class="icon">🏆</span> Leaderboard
+      </button>
+      <button class="nav-item" onclick="showPage('members')">
+        <span class="icon">👨‍👩‍👧‍👦</span> Members
+      </button>
+    </div>
+
+    <div class="sidebar-user">
+      <div class="user-avatar" id="sidebarAvatar">R</div>
+      <div class="user-info">
+        <div class="user-name" id="sidebarName">Rahul Sharma</div>
+        <div class="user-role">Family Admin</div>
+      </div>
+      <button class="logout-btn" onclick="doLogout()" title="Logout">⏏</button>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main">
+
+    <!-- DASHBOARD -->
+    <div id="page-dashboard" class="page active">
+      <div class="page-header">
+        <div class="page-title">Dashboard 🏠</div>
+        <div class="page-sub" id="dashDate">June 2026 · Family Overview</div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card yellow">
+          <div class="stat-label">Total Income</div>
+          <div class="stat-value yellow" id="statIncome">₹0</div>
+          <div class="stat-change">This month</div>
+          <div class="stat-icon">💸</div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-label">Total Expenses</div>
+          <div class="stat-value red" id="statExpense">₹0</div>
+          <div class="stat-change">This month</div>
+          <div class="stat-icon">🛒</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label">Net Savings</div>
+          <div class="stat-value green" id="statSavings">₹0</div>
+          <div class="stat-change">Income - Expenses</div>
+          <div class="stat-icon">💎</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-label">Savings Rate</div>
+          <div class="stat-value blue" id="statRate">0%</div>
+          <div class="stat-change">Of total income</div>
+          <div class="stat-icon">📈</div>
+        </div>
+      </div>
+
+      <div class="charts-grid">
+        <div class="chart-card">
+          <div class="chart-title">📊 Monthly Overview</div>
+          <div class="chart-wrap"><canvas id="monthlyChart"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">🍕 Expense Breakdown</div>
+          <div class="chart-wrap"><canvas id="donutChart"></canvas></div>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <div class="section-title">Recent Transactions</div>
+        <div class="view-all" onclick="showPage('transactions')">View all →</div>
+      </div>
+      <div class="txn-list" id="recentTxnList">
+        <div class="txn-header">
+          <div>Description</div><div>Member</div><div>Date</div><div style="text-align:right">Amount</div>
+        </div>
+        <div class="empty-state"><span class="emoji">💡</span>Add your first transaction using the + button</div>
+      </div>
+    </div>
+
+    <!-- TRANSACTIONS PAGE -->
+    <div id="page-transactions" class="page">
+      <div class="page-header">
+        <div class="page-title">Transactions 💳</div>
+        <div class="page-sub">All family expenses, income & savings</div>
+      </div>
+      <div class="txn-list" id="fullTxnList">
+        <div class="txn-header">
+          <div>Description</div><div>Member</div><div>Date</div><div style="text-align:right">Amount</div>
+        </div>
+        <div class="empty-state"><span class="emoji">📭</span>No transactions yet</div>
+      </div>
+    </div>
+
+    <!-- SAVINGS GOALS -->
+    <div id="page-savings" class="page">
+      <div class="page-header">
+        <div class="page-title">Savings Goals 🎯</div>
+        <div class="page-sub">Track progress towards your family goals</div>
+      </div>
+
+      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-card blue">
+          <div class="stat-label">Total Saved</div>
+          <div class="stat-value blue" id="goalTotalSaved">₹0</div>
+          <div class="stat-icon">🏦</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label">Goals Achieved</div>
+          <div class="stat-value green" id="goalAchieved">0</div>
+          <div class="stat-icon">✅</div>
+        </div>
+        <div class="stat-card yellow">
+          <div class="stat-label">Active Goals</div>
+          <div class="stat-value yellow" id="goalActive">4</div>
+          <div class="stat-icon">🎯</div>
+        </div>
+      </div>
+
+      <div class="goals-grid" id="goalsGrid"></div>
+    </div>
+
+    <!-- ANALYTICS -->
+    <div id="page-analytics" class="page">
+      <div class="page-header">
+        <div class="page-title">Analytics 📊</div>
+        <div class="page-sub">Deep insights into your spending patterns</div>
+      </div>
+      <div class="analytics-grid">
+        <div class="chart-card">
+          <div class="chart-title">📈 6-Month Trend</div>
+          <div class="chart-wrap"><canvas id="trendChart"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">👨‍👩‍👧 Spending by Member</div>
+          <div class="chart-wrap"><canvas id="memberChart"></canvas></div>
+        </div>
+      </div>
+      <div class="analytics-grid">
+        <div class="chart-card">
+          <div class="chart-title">🗓️ Weekly Pattern</div>
+          <div class="chart-wrap"><canvas id="weekChart"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">🏷️ Category Distribution</div>
+          <div class="chart-wrap"><canvas id="catChart"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEADERBOARD -->
+    <div id="page-leaderboard" class="page">
+      <div class="page-header">
+        <div class="page-title">Family Leaderboard 🏆</div>
+        <div class="page-sub">Who's saving the most this month?</div>
+      </div>
+      <div class="lb-list" id="lbList"></div>
+    </div>
+
+    <!-- MEMBERS -->
+    <div id="page-members" class="page">
+      <div class="page-header">
+        <div class="page-title">Family Members 👨‍👩‍👧‍👦</div>
+        <div class="page-sub">Manage your family group</div>
+      </div>
+      <div id="membersList" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;"></div>
+      <button class="add-member-btn" onclick="addMemberPrompt()">+ Add Family Member</button>
+    </div>
+
+  </main>
+
+  <!-- FAB -->
+  <button class="fab" id="fab" onclick="openModal()">+</button>
+</div>
+
+<!-- ══ ADD TRANSACTION MODAL ══ -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-title">
+      Add Transaction
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="type-toggle">
+      <button class="type-btn active-expense" id="btnExpense" onclick="setType('expense')">💸 Expense</button>
+      <button class="type-btn" id="btnIncome" onclick="setType('income')">💰 Income</button>
+      <button class="type-btn" id="btnSaving" onclick="setType('saving')">🎯 Saving</button>
+    </div>
+    <div class="modal-grid">
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <input type="text" class="form-input" id="txnDesc" placeholder="e.g. Grocery shopping">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Amount (₹)</label>
+        <input type="number" class="form-input" id="txnAmount" placeholder="500">
+      </div>
+    </div>
+    <div class="modal-grid">
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <select class="form-select" id="txnCat">
+          <option>🛒 Groceries</option>
+          <option>🏠 Rent/EMI</option>
+          <option>🍔 Food & Dining</option>
+          <option>🚗 Transport</option>
+          <option>💊 Healthcare</option>
+          <option>📚 Education</option>
+          <option>🎮 Entertainment</option>
+          <option>👗 Shopping</option>
+          <option>⚡ Utilities</option>
+          <option>✈️ Travel</option>
+          <option>💼 Salary</option>
+          <option>📈 Investment</option>
+          <option>🎁 Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Family Member</label>
+        <select class="form-select" id="txnMember"></select>
+      </div>
+    </div>
+    <button class="submit-btn" onclick="addTransaction()">Add Transaction ✓</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">✓ Transaction added!</div>
+
+<script src="script.js"></script>
+</body>
+</html>
